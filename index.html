@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Emergency Medications</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="theme-color" content="#b3261e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Emergency Medications">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#5b6573;--bd:#d9dee5;--ac:#b3261e;--ac2:#0b5cad;--hl:#fff4e0;--ped:#e8f1fb;--ad:#eef6ee}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151a;--card:#1b2027;--tx:#e8ebef;--mu:#9aa5b3;--bd:#2d3540;--ac:#ff7b72;--ac2:#6cb2ff;--hl:#3a2f18;--ped:#17283b;--ad:#1a2e1f}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);border-bottom:1px solid var(--bd);padding:10px 14px;z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+h1{font-size:18px;margin:0 0 6px}
+.wt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wt input{width:90px;font-size:18px;padding:6px 8px;border:2px solid var(--ac2);border-radius:8px;background:var(--bg);color:var(--tx)}
+.wt select{font-size:16px;padding:7px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.wt small{color:var(--mu)}
+main{max-width:900px;margin:0 auto;padding:12px 14px 40px}
+.warn{background:var(--hl);border:1px solid var(--bd);border-left:4px solid var(--ac);padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px}
+h2{font-size:16px;margin:22px 0 8px;color:var(--ac);text-transform:uppercase;letter-spacing:.04em}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
+.card h3{margin:0;font-size:16px}
+.form{color:var(--mu);font-size:13px;margin-bottom:4px}
+.ind{margin:4px 0 8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+.box{border-radius:8px;padding:8px 10px;font-size:14px}
+.box b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu)}
+.ped{background:var(--ped);order:-1}.ad{background:var(--ad)}
+.calc{margin-top:8px;background:var(--hl);border-radius:8px;padding:8px 10px;font-weight:600}
+.calc.off{font-weight:400;color:var(--mu)}
+.note{font-size:13px;color:var(--mu);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:left}
+footer{font-size:12px;color:var(--mu);margin-top:20px}
+</style></head><body>
+<header>
+<h1>🚑 Dental Office Emergency Drug Reference</h1>
+<div class="wt"><label for="w"><b>Patient weight</b></label>
+<input id="w" type="number" inputmode="decimal" min="1" max="200" placeholder="0">
+<select id="u"><option value="kg">kg</option><option value="lb">lb</option></select>
+<small id="wk"></small></div>
+</header>
+<main>
+<div class="warn"><b>Reference aid only.</b> Activate EMS for any life-threatening emergency, give oxygen, and follow your office protocol. Doses are drawn from AAPD Medical Emergencies resource, AAP Drugs Used to Treat Pediatric Emergencies (2020), and AHA PALS/BLS/ACLS. Concentrations and devices vary by manufacturer: verify against the label, your DSO protocol, and your own training before use. Enter a weight to see calculated doses.</div>
+<div id="app"></div>
+<h2 id="mh">Oral midazolam (sedation, not an emergency drug)</h2>
+<div class="card" id="mc">
+<h3>Midazolam oral syrup 2 mg/mL</h3>
+<div class="form">AAPD/AAP guideline range 0.25–0.5 mg/kg, max 20 mg. Up to 1 mg/kg may be used in ages 6 months–5 years. Lower doses when combined with other agents.</div>
+<div id="mid"></div>
+<div class="note">Requires appropriate sedation permit, pre-sedation evaluation, NPO guidance, continuous pulse oximetry and capnography, and a trained observer. Flumazenil should be available for reversal. Reduce dose for combined sedatives, opioids, or medically complex patients. Dispense from syrup with an oral syringe.</div>
+</div>
+<div id="bot"></div>
+<footer>Sources: AAPD Reference Manual, Medical Emergencies resource; Shenoi &amp; Timm, Pediatrics 2020;145(1):e20193450; AHA PALS/ACLS guidelines. Not a substitute for clinical judgment.<br>Version 1.0 · November 12, 2026<br>Reviewed by: CM · November 12, 2026</footer>
+</main>
+<script>
+const f=(x,d=2)=>{x=+x;return (Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toString()};
+const S=[
+{t:"Allergic reaction / anaphylaxis",d:[
+{n:"Epinephrine 1 mg/mL (1:1000) vial",form:"1 mg/mL. IM in anterolateral thigh. First-line for anaphylaxis.",ind:"Anaphylaxis, severe bronchospasm unresponsive to albuterol, airway swelling.",
+ ad:"0.3–0.5 mg (0.3–0.5 mL) IM. Repeat every 5–15 min as needed.",pe:"0.01 mg/kg (0.01 mL/kg) IM, max 0.3–0.5 mg (0.3–0.5 mL). Repeat every 5–15 min. Use a 1 mL syringe.",
+ c:w=>{const m=Math.min(.01*w,.5);return `Draw up ${f(m)} mL (${f(m)} mg) IM`+(w>=50?" (adult dose range)":"")}},
+{n:"Epinephrine auto-injector 0.3 mg per 0.3 mL",form:"Single-use IM device, thigh.",ind:"Anaphylaxis when auto-injector is chosen over drawing up from the vial.",
+ ad:"0.3 mg IM. Repeat in 5–15 min if no improvement.",pe:"Weight ≥30 kg: 0.3 mg.",
+ c:w=>w>=30?"Appropriate device for this weight":"Under 30 kg: use the 0.15 mg device or draw from vial"},
+{n:"Epinephrine auto-injector 0.15 mg per 0.15 mL",form:"Single-use IM device, thigh.",ind:"Anaphylaxis in smaller children.",
+ ad:"Not for adults.",pe:"15–30 kg: 0.15 mg. Under 15 kg: weight-dosed vial draw-up preferred (a 0.1 mg device exists for 7.5–15 kg).",
+ c:w=>w>=15&&w<30?"Appropriate device for this weight":(w<15?"Under 15 kg: draw 0.01 mL/kg from 1 mg/mL vial":"30 kg or more: use the 0.3 mg device")},
+{n:"Diphenhydramine 50 mg/mL",form:"50 mg/mL. IM or slow IV. Adjunct after epinephrine, never in place of it.",ind:"Mild urticaria/itching; adjunct in anaphylaxis.",
+ ad:"25–50 mg (0.5–1 mL) IM/IV.",pe:"1–1.25 mg/kg (0.02–0.025 mL/kg), max 50 mg (1 mL).",
+ c:w=>{const m=Math.min(w,50);return `Draw up ${f(m/50)} mL (${f(m)} mg) at 1 mg/kg`}},
+{n:"Dexamethasone 4 mg/mL",form:"4 mg/mL. IM or IV. Slow onset, adjunct only.",ind:"Adjunct for anaphylaxis, asthma, or airway edema to reduce late-phase reaction.",
+ ad:"4–10 mg (1–2.5 mL) IV/IM.",pe:"0.6 mg/kg (0.15 mL/kg), max 16 mg (4 mL). Asthma regimens may use 0.15–0.6 mg/kg.",
+ c:w=>{const m=Math.min(.6*w,16);return `Draw up ${f(m/4)} mL (${f(m)} mg) at 0.6 mg/kg`}}]},
+{t:"Bronchospasm / asthma",d:[
+{n:"Albuterol sulfate MDI 90 µg/puff",form:"Inhaler with spacer/valved holding chamber.",ind:"Wheezing, bronchospasm, asthma exacerbation.",
+ ad:"4–8 puffs every 20 min up to 3 doses, then as needed.",pe:"Same: 4–8 puffs via spacer every 20 min up to 3 doses. Use epinephrine IM if severe or part of anaphylaxis.",
+ c:w=>"4–8 puffs (360–720 µg) per dose, no weight adjustment"}]},
+{t:"Hypoglycemia (altered consciousness, unable to take oral glucose)",d:[
+{n:"Dextrose 50% injection",form:"50% = 0.5 g/mL. IV/IO only, slow push. Conscious patients: give oral glucose first.",ind:"Hypoglycemia with altered mental status or seizure when glucose is low or unknown.",
+ ad:"25 g = 50 mL of D50 IV, undiluted.",pe:"Dilute to D25 (1:1 with 0.9% sodium chloride). Give 0.5–1 g/kg = 2–4 mL/kg of D25. Draw equal volumes of D50 and sodium chloride. Use D10 for neonates/infants if available.",
+ c:w=>`D25 ${f(2*w,1)}–${f(4*w,1)} mL → draw ${f(w,1)}–${f(2*w,1)} mL D50 + ${f(w,1)}–${f(2*w,1)} mL 0.9% NaCl`+(w>=40?". Adolescent/adult size: undiluted D50 25 g (50 mL) acceptable":"")}]},
+{t:"Opioid overdose / respiratory depression",d:[
+{n:"Naloxone injection 0.4 mg/mL",form:"0.4 mg/mL. IV, IM, or SubQ.",ind:"Opioid-induced respiratory depression or apnea.",
+ ad:"Sedation-related: 0.04–0.1 mg increments IV, titrate. Overdose: 0.4–2 mg (1–5 mL) IV/IM, repeat every 2–3 min.",
+ pe:"Full reversal: 0.1 mg/kg (0.25 mL/kg), max 2 mg (5 mL). Sedation-related respiratory depression: titrate 1–5 µg/kg IV. Dilute 0.4 mg (1 mL) + 9 mL NaCl = 0.04 mg/mL; give 0.025–0.125 mL/kg. Monitor at least 2 h after the last dose.",
+ c:w=>{const m=Math.min(.1*w,2);return `Full reversal: ${f(m/.4)} mL (${f(m)} mg). Titrated (0.04 mg/mL): ${f(.025*w)}–${f(.125*w)} mL`}},
+{n:"Narcan nasal spray 0.4 mg",form:"0.4 mg per device, one nostril.",ind:"Known or suspected opioid overdose, no IV access.",
+ ad:"One spray (0.4 mg) in one nostril. Repeat with new device in other nostril every 2–3 min.",pe:"Same 0.4 mg spray; no weight adjustment. Rescue breathing is essential.",
+ c:w=>"1 spray (0.4 mg) intranasal, no weight adjustment"}]},
+{t:"Cardiac arrest / arrhythmia / bradycardia",d:[
+{n:"Epinephrine 1 mg/10 mL (0.1 mg/mL, 1:10,000)",form:"0.1 mg/mL. IV/IO push followed by flush. Not for IM anaphylaxis.",ind:"Cardiac arrest (after CPR starts); symptomatic bradycardia unresponsive to ventilation.",
+ ad:"1 mg (10 mL) IV/IO every 3–5 min.",pe:"0.01 mg/kg (0.1 mL/kg) IV/IO every 3–5 min, max 1 mg (10 mL).",
+ c:w=>{const m=Math.min(.01*w,1);return `Draw up ${f(m*10,1)} mL (${f(m,3)} mg)`}},
+{n:"Atropine sulfate 0.1 mg/mL",form:"0.1 mg/mL. IV/IO/IM.",ind:"Symptomatic bradycardia from increased vagal tone or primary AV block.",
+ ad:"1 mg (10 mL) IV every 3–5 min, max total 3 mg.",pe:"0.02 mg/kg (0.2 mL/kg), max single dose 0.5 mg (5 mL) in children, 1 mg in adolescents. May repeat once.",
+ c:w=>{const cap=w>=50?1:.5;const m=Math.min(.02*w,cap);return `Draw up ${f(m*10,1)} mL (${f(m,3)} mg)`}},
+{n:"Lidocaine 2% MDV (20 mg/mL)",form:"Must be plain lidocaine WITHOUT epinephrine. Multi-dose vial contains preservative; some protocols prefer preservative-free or an amiodarone alternative.",ind:"Antiarrhythmic for refractory VF/pulseless VT when amiodarone is unavailable.",
+ ad:"1–1.5 mg/kg IV/IO (typically 3.75–5 mL for 75–100 mg). May repeat 0.5–0.75 mg/kg.",pe:"1 mg/kg (0.05 mL/kg) IV/IO bolus.",
+ c:w=>`Draw up ${f(.05*w,2)} mL (${f(w,1)} mg)`}]},
+{t:"Chest pain (adult patients and staff)",d:[
+{n:"Nitroglycerin 0.4 mg sublingual tablet",form:"Adult drug. Not for pediatric use.",ind:"Suspected angina or acute coronary syndrome. Also give aspirin 160–325 mg chewed.",
+ ad:"0.4 mg SL every 5 min up to 3 doses. Contraindicated with systolic BP below 90–100 mmHg or PDE-5 inhibitor use within 24–48 h. Call EMS if pain is not relieved after the first dose.",pe:"Not indicated.",
+ c:null}]},
+{t:"Nausea / vomiting",d:[
+{n:"Ondansetron injection 2 mg/mL",form:"2 mg/mL. Slow IV (over 2–5 min) or IM.",ind:"Nausea/vomiting, usually sedation- or medication-related.",
+ ad:"4 mg (2 mL) IV/IM.",pe:"0.1 mg/kg (0.05 mL/kg), max 4 mg (2 mL).",
+ c:w=>{const m=Math.min(.1*w,4);return `Draw up ${f(m/2,2)} mL (${f(m,2)} mg)`}}]},
+{t:"Supportive / diluent",d:[
+{n:"Sodium chloride 0.9% MDV",form:"Multi-dose vial contains preservative (benzyl alcohol); use preservative-free for neonates.",ind:"Diluent for D50 → D25 and naloxone titration; IV/IO flush; vehicle for fluid resuscitation.",
+ ad:"Flush 5–10 mL after each IV drug. Fluid bolus 250–500 mL.",pe:"Flush 3–5 mL after each IV drug. Fluid bolus 10–20 mL/kg for hypotension/hypovolemia per PALS (reassess after each).",
+ c:w=>`Fluid bolus ${f(10*w,0)}–${f(20*w,0)} mL (10–20 mL/kg). Dextrose dilution: equal volume to D50`}]}
+];
+const B=[
+{t:"Benzodiazepine reversal",d:[
+{n:"Flumazenil 0.1 mg/mL, 5 mL multiple-dose vial (0.5 mg)",form:"0.1 mg/mL. Slow IV over 15–30 s into a free-flowing line.",ind:"Reversal of midazolam/benzodiazepine-induced oversedation or respiratory depression after airway support is established.",
+ ad:"0.2 mg (2 mL) IV over 15 s. Repeat 0.2 mg every 1 min as needed, max total 1 mg (10 mL).",pe:"0.01 mg/kg (0.1 mL/kg) IV, max 0.2 mg (2 mL) per dose. Repeat every 1 min, max total 0.05 mg/kg or 1 mg, whichever is lower. Monitor at least 2 h: resedation can occur. Seizure risk with chronic benzodiazepine use or co-ingested pro-convulsants.",
+ c:w=>{const m=Math.min(.01*w,.2);return `Draw up ${f(m/.1,2)} mL (${f(m,3)} mg) per dose; cumulative max ${f(Math.min(.05*w,1),2)} mg (${f(Math.min(.05*w,1)/.1,1)} mL)`}}]},
+{t:"Laryngospasm (airway emergency)",d:[
+{n:"Succinylcholine chloride 20 mg/mL, 10 mL multiple-dose vial (200 mg)",form:"20 mg/mL. IV preferred; IM if no IV access. Refrigerate vial. Requires ability to ventilate and intubate.",ind:"Complete laryngospasm not relieved by 100% oxygen, jaw thrust, and positive pressure ventilation.",
+ ad:"IV 20–40 mg (1–2 mL), or 0.5–1 mg/kg if larger dose needed. IM 3–4 mg/kg if no IV, max 150 mg (7.5 mL).",pe:"IV 0.5–1 mg/kg (0.025–0.05 mL/kg); some protocols use 0.1–0.5 mg/kg for laryngospasm. IM 4 mg/kg (0.2 mL/kg). Pretreat or have atropine ready: bradycardia risk, especially in children and with repeat doses. Contraindicated: personal/family malignant hyperthermia history, hyperkalemia risk, neuromuscular disease, burns or prolonged immobilization.",
+ c:w=>`IV: ${f(.025*w,2)}–${f(.05*w,2)} mL (${f(.5*w,1)}–${f(w,1)} mg). IM: ${f(Math.min(.2*w,7.5),2)} mL (${f(Math.min(4*w,150),1)} mg)`}]}
+];
+const app=document.getElementById("app");
+function render(){
+ const wk=getW();
+ ["mh","mc"].forEach(i=>document.getElementById(i).style.display=wk?"":"none");
+ if(!wk){document.getElementById("wk").textContent="";app.innerHTML='<div class="note">Enter patient weight to display doses.</div>';document.getElementById("bot").innerHTML="";return}
+ document.getElementById("wk").textContent=wk?`= ${f(wk,1)} kg`:"";
+ app.innerHTML=S.map(s=>`<h2>${s.t}</h2>`+s.d.map(d=>{
+  const calc=d.c?(wk?`<div class="calc">${d.c(wk)}</div>`:`<div class="calc off">Enter weight for calculated dose</div>`):"";
+  return `<div class="card"><h3>${d.n}</h3><div class="form">${d.form}</div><div class="ind"><b>Indication:</b> ${d.ind}</div>
+  <div class="row"><div class="box ad"><b>Adult</b>${d.ad}</div><div class="box ped"><b>Pediatric</b>${d.pe}</div></div>${calc}</div>`}).join("")).join("");
+ document.getElementById("bot").innerHTML=B.map(s=>`<h2>${s.t}</h2>`+s.d.map(d=>{
+  const calc=wk?`<div class="calc">${d.c(wk)}</div>`:`<div class="calc off">Enter weight for calculated dose</div>`;
+  return `<div class="card"><h3>${d.n}</h3><div class="form">${d.form}</div><div class="ind"><b>Indication:</b> ${d.ind}</div>
+  <div class="row"><div class="box ad"><b>Adult</b>${d.ad}</div><div class="box ped"><b>Pediatric</b>${d.pe}</div></div>${calc}</div>`}).join("")).join("");
+ const mid=document.getElementById("mid");
+ if(!wk){mid.innerHTML='<div class="calc off">Enter weight for calculated dose</div>';return}
+ mid.innerHTML='<table><tr><th>Dose</th><th>mg</th><th>mL (2 mg/mL)</th></tr>'+[[.25,"0.25 mg/kg"],[.5,"0.5 mg/kg"],[1,"1 mg/kg (6 mo–5 y only)"]].map(([k,l])=>{const m=Math.min(k*wk,20);return `<tr><td>${l}</td><td>${f(m,1)}${k*wk>20?" (max)":""}</td><td>${f(m/2,1)}</td></tr>`}).join("")+'</table>';
+}
+function getW(){const v=parseFloat(document.getElementById("w").value);if(!v||v<=0)return 0;return document.getElementById("u").value==="lb"?v/2.2046:v}
+document.getElementById("w").addEventListener("input",render);
+document.getElementById("u").addEventListener("change",render);
+render();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body></html>
